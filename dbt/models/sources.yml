@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: raw_csv
+    schema: raw_csv
+    loaded_at_field: _ingestion_ts
+    freshness:
+      warn_after:  {count: 26, period: hour}
+      error_after: {count: 50, period: hour}
+    tables:
+      - name: pedido
+      - name: item_pedido
+
+  - name: raw_postgres
+    schema: raw_postgres
+    tables:
+      - name: produto
+      - name: unidade
+      - name: estado
+      - name: pais
+
+  - name: ops
+    schema: ops
+    tables:
+      - name: ingestion_log

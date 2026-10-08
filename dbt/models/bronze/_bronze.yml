@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: bronze_pedido
+    columns:
+      - name: id_unidade
+        tests: [not_null]
+      - name: id_pedido
+        tests: [not_null]
+      - name: data_pedido
+        tests: [not_null]
+      - name: tipo_pedido
+        tests:
+          - not_null
+          - accepted_values: {values: ['ONLINE', 'FISICA']}
+      - name: status
+        tests:
+          - not_null
+          - accepted_values: {values: ['PENDENTE', 'FINALIZADO', 'CANCELADO']}
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [id_unidade, id_pedido]
+
+  - name: bronze_item_pedido
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [id_unidade, id_pedido, id_item_pedido]
+    columns:
+      - name: qtd
+        tests: [not_null]
+      - name: id_produto
+        tests:
+          - relationships: {to: ref('bronze_produto'), field: id_produto}
