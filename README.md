@@ -124,10 +124,10 @@ GO --> AL
 
 - **GCS + BigQuery:** lake para arquivos e warehouse serverless para SQL e dbt, sem infraestrutura para administrar.
 - **GitHub Actions agendado:** o repositório já existe por causa do dbt e do Git, então não há ferramenta nova para operar nem custo fixo de orquestrador. O cron diário atende o SLA de D-1, com `workflow_dispatch` para execução manual e reprocessamento.
-- **Conexão com o PostgreSQL via VPN:** Cloud VPN (HA VPN, túnel IPsec) entre a rede da matriz e a VPC do projeto. O banco é acessado por IP privado, sem exposição à internet, com usuário somente leitura e credenciais no Secret Manager.
+- **Conexão com o PostgreSQL:** O banco é acessado por IP privado dentro de um grupo de segurança, com usuário somente leitura e credenciais no Secret Manager. 
 - **Autenticação no GCP:** Workload Identity Federation entre GitHub e GCP, restrita ao repositório e à branch `main`; segredos no Secret Manager.
 - **Concorrência:** `concurrency` no workflow para impedir duas execuções simultâneas.
-- **Trade-offs conhecidos:** o cron do Actions pode atrasar alguns minutos, e não há retry/backfill nativos. Por isso o pipeline precisa ser idempotente e ter alerta de falha. O runner próprio exige manutenção (patches, monitoramento) e deve ser tratado como componente de produção.
+- **Trade-offs conhecidos:** o cron do Actions pode atrasar alguns minutos, e não há retry/backfill nativos. Por isso o pipeline precisa ser idempotente e ter alerta de falha. 
 - **Transversal:** IAM por camada, Secret Manager, Cloud Logging/Monitoring e Terraform.
 
 ---
@@ -185,6 +185,7 @@ GO --> AL
 | # | Atividade | Descrição |
 |---|---|---|
 | 1 | Migrar base PostgreSQL para GCP | Trazer as tabelas existentes nessa base direto para o GCP, eliminando outro uma ferramenta externa e unificando tudo dentro da plataforma. |
+| 2 | Automatizar o envio dos CSV’s | Para evitar a interferência humana, seria possível criar uma automação que enviaria, de forma automática, os CSV’s para o GCS. |
 
 ---
 
